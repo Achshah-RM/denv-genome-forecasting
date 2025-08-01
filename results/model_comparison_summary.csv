@@ -1,0 +1,12 @@
+Metric,RF,ANN,LSTM,XGB,LGB
+Overall Accuracy,0.455,0.055,0.395,0.449,0.46
+Mean Per-Position Accuracy,0.455,0.055,0.395,0.449,0.46
+Median Per-Position Accuracy,0.444,0.019,0.38,0.435,0.454
+Max Per-Position Accuracy,0.889,0.889,0.889,0.889,0.889
+Min Per-Position Accuracy,0.241,0.0,0.167,0.167,0.222
+Std. Dev. Per-Position Accuracy,0.087,0.134,0.099,0.09,0.089
+Mean Per-Position Macro F1,0.33,0.031,0.145,0.328,0.328
+Median Per-Position Macro F1,0.331,0.022,0.145,0.328,0.33
+Max Per-Position Macro F1,0.715,0.235,0.235,0.65,0.702
+Min Per-Position Macro F1,0.15,0.0,0.06,0.125,0.129
+Std. Dev. Per-Position Macro F1,0.067,0.036,0.026,0.068,0.07
