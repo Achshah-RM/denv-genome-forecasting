@@ -15,31 +15,49 @@
 
 ## Overview
 
-This repository contains code and resources for a research project that uses machine learning to forecast likely genomic changes in the Dengue virus (DENV) based on environmental trends. Focusing on key genomic regions (Envelope (E) protein, 5′UTR, and 3′UTR), the project combines historical DENV sequences from Delhi, India, with environmental data—average temperature and CO₂ emissions—to explore how climate factors may influence viral evolution. The pipeline covers data collection, preprocessing, exploratory analysis, and predictive modeling using Random Forest, Artificial Neural Networks, and LSTM models.  The goal is to support vaccine design and epidemic preparedness by enabling more accurate predictions of dominant viral genotypes in response to environmental change.
+This repository contains code and resources for a research project that uses machine learning to forecast likely genomic changes in the Dengue virus (DENV) based on environmental trends. Focusing on key genomic regions (Envelope (E) protein, 5′UTR, and 3′UTR), the project combines historical DENV sequences from Delhi, India, with environmental data (average temperature and CO₂ emissions) to explore how climate factors may influence viral evolution. The pipeline covers data collection, preprocessing, exploratory analysis, and predictive modeling using five machine learning models:
+- Random Forest (RF)
+- Artificial Neural Networks (ANN)
+- Long Short-Term Memory networks (LSTM)
+- XGBoost
+- LightGBM
+
+The goal is to support vaccine design and epidemic preparedness by enabling more accurate predictions of dominant viral genotypes in response to environmental change.
 
 ## Project Structure
 ```plaintext
 denv-genome-forecasting/
 │
 ├── data/
-│ ├── metadata.csv                  # NCBI metadata file
-│ ├── indian_denv_genomes.gb        # Full GenBank records (downloaded)
-│ ├── extracted_sequences.csv       # DENV regions (E, 5′UTR, 3′UTR) with accession/year
-│ ├── delhi_env_1960_2024.csv       # Yearly Delhi temperature and CO₂ data
-│ ├── combined_dataset.csv          # Merged genomic and environmental data
-│ └── processed_genomic_dataset.csv # Final, processed input for ML modeling
+│ ├── metadata.csv                    # NCBI metadata file
+│ ├── indian_denv_genomes.gb          # Full GenBank records (downloaded)
+│ ├── extracted_sequences.csv         # DENV regions (E, 5′UTR, 3′UTR) with accession/year
+│ ├── delhi_env_1960_2024.csv         # Yearly Delhi temperature and CO₂ data
+│ ├── combined_dataset.csv            # Merged genomic and environmental data
+│ └── processed_genomic_dataset.csv   # Final, processed input for ML modeling
 │
 ├── notebooks/
 │ ├── data_eda.ipynb                    # Exploratory data analysis
 │ ├── data_preprocessing.ipynb          # Data cleaning and preparation
 │ ├── download_genbank.ipynb            # Scripts to download GenBank records
 │ ├── extract_regions.ipynb             # Extract E, 5′UTR, 3′UTR regions from genomes
-│ └── merge_environment_sequences.ipynb # Merge genomic and environmental data
+│ ├── merge_environment_sequences.ipynb # Merge genomic and environmental data
+│ ├── ann_model.ipynb                   # Train and evaluate a Multi-Layer Perceptron (MLP) model
+│ ├── lightgbm_model.ipynb              # Train and evaluate a LightGBM classifier
+│ ├── lstm_model.ipynb                  # Train and evaluate a LSTM model
+│ ├── random_forest_model.ipynb         # Train and evaluate a Random Forest classifier
+│ ├── xgboost_model.ipynb               # Train and evaluate a XGBoost classifier
+│ └── model_comparison.ipynb            # Analyze and visualize the comparative performance
 │
 ├── models/
-│ └── (empty)            # (Will contain trained model checkpoints)
+│ ├── rnn_lstm_model.joblib               # Trained LSTM model
+│ ├── rf_multioutput_model.joblib         # Trained Random Forest classifier
+│ ├── xgb_multioutput_model.joblib        # Trained XGBoost classifier
+│ ├── lgb_multioutput_model.joblib        # Trained LightGBM classifier
+│ └── ann_mlp_model.joblib                # Trained ANN model
 │
 ├── results/
+│ ├── ann_per_position_accuracy.csv           # Trained LSTM model
 │ └── (empty)            # (Will contain evaluation metrics and predictions)
 │
 ├── README.md            # Project overview and usage instructions
@@ -209,13 +227,8 @@ Forecasting the evolution of the dengue virus genome in response to environmenta
 **Future Scope:**  
 The project can be expanded by incorporating additional genomic regions, environmental variables, or data from other regions and time periods. Further work could include advanced model interpretability, validation on external datasets, or adaptation for other vector-borne diseases.
 
-## Acknowledgments
+## Acknowledgements
 
 This research project was conducted as part of the bachelor thesis at **IU International University of Applied Sciences, Germany**, under the supervision of **Prof. (Hon.) Dr. rer. pol. Fadi Mohsen**.
-
----
-
-> **Project Status:**  
-> The work is ongoing. Data collection, preprocessing, and exploratory analysis have been completed. The modeling and evaluation phase is currently in progress and will be updated in this repository upon completion.
 
 ---
