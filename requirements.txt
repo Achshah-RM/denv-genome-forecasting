@@ -1,8 +1,32 @@
-pandas
-numpy
-matplotlib
-seaborn
-scikit-learn
-scipy
-statsmodels
-biopython
+# Core Python libraries
+numpy>=1.19
+pandas>=1.1
+
+# Scientific computing and statistics
+scipy>=1.5
+statsmodels>=0.12
+
+# Visualization
+matplotlib>=3.3
+seaborn>=0.11
+
+# Data science and ML
+scikit-learn>=0.24
+xgboost>=1.4
+lightgbm>=3.2
+
+# Deep learning (for ANN/LSTM modeling)
+tensorflow>=2.6
+
+# Bioinformatics (for GenBank parsing)
+biopython>=1.78
+
+# Jupyter notebook environment
+notebook>=6.4
+ipykernel>=5.5
+
+# For saving models
+joblib>=1.0
+
+# Minimum Python version
+python_version >= 3.7
