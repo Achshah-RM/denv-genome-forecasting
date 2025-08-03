@@ -15,14 +15,22 @@
 
 ## Overview
 
-This repository contains code and resources for a research project that uses machine learning to forecast likely genomic changes in the Dengue virus (DENV) based on environmental trends. Focusing on key genomic regions (Envelope (E) protein, 5′UTR, and 3′UTR), the project combines historical DENV sequences from Delhi, India, with environmental data (average temperature and CO₂ emissions) to explore how climate factors may influence viral evolution. The pipeline covers data collection, preprocessing, exploratory analysis, and predictive modeling using five machine learning models:
+Forecasting the genomic evolution of the dengue virus (DENV) under environmental influence presents a complex challenge at the intersection of virology, climatology, and machine learning. While most existing studies have primarily analyzed historical sequence patterns, this project investigates whether machine learning can provide a more adaptive and forward-looking approach to mutation prediction in biologically significant sub-genomic regions.
+
+This repository contains all code and resources for the research project that leverages machine learning to predict likely genomic changes in DENV based on environmental trends. The study focuses on three functionally critical and environmentally sensitive regions of the genome: the Envelope (E) protein and the untranslated regions (5′UTR and 3′UTR). Historical DENV sequences from Delhi, India, are combined with environmental data (specifically, average annual temperature and CO₂ emissions) to explore how climate factors may influence viral evolution. The pipeline encompasses data collection, preprocessing, exploratory analysis, and predictive modeling using five machine learning models:
+
 - Random Forest (RF)
 - Artificial Neural Networks (ANN)
 - Long Short-Term Memory networks (LSTM)
 - XGBoost (XGB)
 - LightGBM (LGB)
 
-The goal is to support vaccine design and epidemic preparedness by enabling more accurate predictions of dominant viral genotypes in response to environmental change.
+To evaluate methodological feasibility and algorithmic effectiveness, the study is guided by the following research questions:
+
+1. *Can machine learning algorithms accurately forecast nucleotide-level mutations in the Envelope (E), 5′UTR, and 3′UTR regions of the dengue virus using forecasted environmental variables such as temperature and atmospheric CO₂?*
+2. *How do Artificial Neural Networks (ANN), Random Forest, XGBoost, LightGBM, and Long Short-Term Memory (LSTM) compare in predictive accuracy when modeling climate-sensitive mutations in these regions?*
+
+The overarching goal is to support vaccine design and epidemic preparedness by enabling more accurate predictions of dominant viral genotypes in response to environmental change.
 
 ## Project Structure
 ```plaintext
@@ -199,7 +207,7 @@ The following steps were **common to all models**:
 
 All models were benchmarked for the same prediction task. Key details are below:
 
-#### Random Forest (RF)
+#### 1. Random Forest (RF)
 
 - **Library:** `sklearn.ensemble.RandomForestClassifier`
 - **Multi-Output Setup:**  
@@ -207,7 +215,7 @@ All models were benchmarked for the same prediction task. Key details are below:
 - **Fitting:**  
   Model was fit on the training data and used to predict nucleotide classes for all sequence positions in the test set.
 
-#### Artificial Neural Network (ANN)
+#### 2. Artificial Neural Network (ANN)
 
 - **Library:** TensorFlow/Keras
 - **Architecture:**  
@@ -219,7 +227,7 @@ All models were benchmarked for the same prediction task. Key details are below:
 - **Training:**  
   Epochs is set to 50 with early stopping to prevent overfitting and mini-batch size of 32 is used to strike a balance.
 
-#### Long Short-Term Memory Network (LSTM)
+#### 3. Long Short-Term Memory Network (LSTM)
 
 - **Library:** TensorFlow/Keras
 - **Architecture:**  
@@ -229,7 +237,7 @@ All models were benchmarked for the same prediction task. Key details are below:
 - **Training:**  
   Epochs is set to 50 with early stopping to prevent overfitting and mini-batch size of 32 is used to strike a balance.
 
-#### XGBoost
+#### 4. XGBoost
 
 - **Library:** `xgboost.XGBClassifier`
 - **Multi-Output Setup:**  
@@ -237,7 +245,7 @@ All models were benchmarked for the same prediction task. Key details are below:
 - **Fitting:**  
   Model was fit on the training data and used to predict nucleotide classes for all sequence positions in the test set.
 
-#### LightGBM
+#### 5. LightGBM
 
 - **Library:** `lightgbm.LGBMClassifier`
 - **Multi-Output Setup:**  
@@ -318,14 +326,16 @@ To reproduce the results or use the code for further analysis, follow these step
   
 ## Conclusion
 
-Forecasting the evolution of the dengue virus genome in response to environmental changes has important implications for public health, vaccine development, and epidemic preparedness. By integrating machine learning with real-world climate and genomic data, this project aims to:
+This project investigated whether machine learning algorithms can accurately forecast nucleotide-level mutations in the Envelope (E), 5′UTR, and 3′UTR regions of the dengue virus using forecasted environmental variables such as temperature and atmospheric CO₂. The results demonstrate that machine learning models are indeed capable of capturing meaningful genotype–environment relationships to predict viral genomic evolution. By integrating climate data with genomic sequences, the models provided a forward-looking approach to mutation forecasting beyond traditional retrospective analyses.
 
-- Support early identification of high-risk viral genotypes.
-- Inform the design of more effective vaccines and therapeutic strategies.
-- Enable policymakers to anticipate and respond proactively to climate-driven shifts in infectious disease patterns.
+Regarding the comparative performance of different algorithms, tree-based models—specifically Random Forest and LightGBM—consistently outperformed deep learning architectures such as Artificial Neural Networks (ANN) and Long Short-Term Memory networks (LSTM). These models achieved higher overall accuracy and macro F1 scores, indicating superior capability in modeling the complex, but structured, relationships between environmental factors and nucleotide-level mutations. XGBoost also showed strong performance, closely following Random Forest and LightGBM. Conversely, ANN and LSTM, while powerful in many biological sequence applications, were less effective in this context, likely due to the relatively small dataset size and the nature of the input features.
 
-**Future Scope:**  
-The project can be expanded by incorporating additional genomic regions, environmental variables, or data from other regions and time periods. Further work could include advanced model interpretability, validation on external datasets, or adaptation for other vector-borne diseases.
+These findings confirm that machine learning can successfully forecast climate-sensitive mutations in key DENV genomic regions, with tree-based models providing the best predictive accuracy. Moreover, the study underscores the importance of aligning algorithm choice with data characteristics and problem complexity in bioinformatics research.
+
+Beyond answering the research questions, this work establishes a robust methodological framework for future studies aiming to model viral evolution under environmental influences. The ability to anticipate genomic shifts driven by climate variables has significant implications for public health, vaccine design, and epidemic preparedness, enabling proactive strategies against emerging viral threats.
+
+> **Future Scope:**  
+As the first proof-of-concept study in climate-driven dengue genomic forecasting, this work lays a foundational framework but leaves ample room for advancement and refinement. While this study used temperature and atmospheric CO₂, these alone do not fully capture environmental complexity. Future research should identify and integrate other influential variables—such as humidity, precipitation, land use, vector density, or pollution metrics—that may more directly or indirectly affect viral mutation rates. Moreover, The uneven distribution of nucleotide classes at different positions can bias model performance. Advanced techniques for handling class imbalance (e.g., oversampling, synthetic data generation, class-weighting) should be explored to improve accuracy and robustness. More extensive and systematic hyperparameter optimization—potentially using automated methods like Bayesian optimization or genetic algorithms—can further improve model predictive power. Beyond the five models benchmarked here, future work may investigate cutting-edge or domain-specific machine learning approaches, such as graph neural networks, transformer-based architectures, or hybrid models, using this study as a comparative benchmark. This framework can be adapted to other geographic regions to capture local environmental influences and viral evolution patterns. Moreover, it can be extended to model genomic evolution of other vector-borne or environmentally sensitive pathogens, enhancing its relevance and utility across infectious disease research. By providing this guidance, the current work serves as a comprehensive starting point for researchers aiming to develop more accurate, interpretable, and generalizable models of climate-aware viral mutation forecasting.
 
 ## Acknowledgements
 
