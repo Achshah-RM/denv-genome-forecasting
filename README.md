@@ -19,8 +19,8 @@ This repository contains code and resources for a research project that uses mac
 - Random Forest (RF)
 - Artificial Neural Networks (ANN)
 - Long Short-Term Memory networks (LSTM)
-- XGBoost
-- LightGBM
+- XGBoost (XGB)
+- LightGBM (LGB)
 
 The goal is to support vaccine design and epidemic preparedness by enabling more accurate predictions of dominant viral genotypes in response to environmental change.
 
@@ -57,8 +57,22 @@ denv-genome-forecasting/
 │ └── ann_mlp_model.joblib                # Trained ANN model
 │
 ├── results/
-│ ├── ann_per_position_accuracy.csv           # Trained LSTM model
-│ └── (empty)            # (Will contain evaluation metrics and predictions)
+│ ├── ann_per_position_accuracy.csv                # ANN model performance
+│ ├── ann_per_position_classification_report.csv   # ANN model performance
+│ ├── ann_per_position_confusion_matrices.json     # ANN model performance
+│ ├── lgb_per_position_accuracy.csv                # LightGBM classifier performance
+│ ├── lgb_per_position_classification_report.csv   # LightGBM classifier performance
+│ ├── lgb_per_position_confusion_matrices.json     # LightGBM classifier performance
+│ ├── lstm_per_position_accuracy.csv               # LSTM model performance
+│ ├── lstm_per_position_classification_report.csv  # LSTM model performance
+│ ├── lstm_per_position_confusion_matrices.json    # LSTM model performance
+│ ├── rf_per_position_accuracy.csv                 # Random Forest classifier performance
+│ ├── rf_per_position_classification_report.csv    # Random Forest classifier performance
+│ ├── rf_per_position_confusion_matrices.json      # Random Forest classifier performance
+│ ├── xgb_per_position_accuracy.csv                # XGBoost classifier performance
+│ ├── xgb_per_position_classification_report.csv   # XGBoost classifier performance
+│ ├── xgb_per_position_confusion_matrices.json     # XGBoost classifier performance
+│ └── model_comparison_summary.csv                 # Overall performance comparison
 │
 ├── README.md            # Project overview and usage instructions
 ├── requirements.txt     # Python dependencies for running code
@@ -108,6 +122,8 @@ The merged dataset (**combined_dataset.csv**) is available on Kaggle.
 
 ## Data Preprocessing and Cleaning
 
+The raw genomic and environmental data underwent a systematic preprocessing pipeline to ensure consistency, quality, and suitability for machine learning analysis.
+
 1. **Column Selection:**  
    Removed unnecessary columns such as `Accession` and `Collection_Year`, retaining only the sequence and environmental variables needed for modeling.
 
@@ -130,7 +146,7 @@ The merged dataset (**combined_dataset.csv**) is available on Kaggle.
    `A` → 1, `T` → 2, `G` → 3, `C` → 4, `N` (unknown/padded) → 0  
    This format is suitable for multi-class classification models.
 
-The resulting dataset is fully processed and ready for machine learning analysis.
+> **See data_preprocessing.ipynb in the notebooks/ directory for the complete preprocessing pipeline and implementation details.**
 
 ## Exploratory Data Analysis (EDA)
 
@@ -159,23 +175,96 @@ A comprehensive EDA was performed to understand the dataset’s structure, asses
 
 These findings confirm the dataset is well-suited for machine learning modeling and genotype–environment association studies, while highlighting the importance of accounting for padding, variable sequence coverage, and feature collinearity in downstream analysis.
 
+> **See data_eda.ipynb in the notebooks/ directory for detailed visualizations and a full breakdown of EDA findings.**
+
 ## Modeling
 
-The following steps are planned for the predictive modeling phase (to be completed):
+This project formulates the prediction of DENV genomic evolution as a multi-class, multi-output classification task. For each sample, the goal is to predict the nucleotide (`A`, `T`, `G`, `C`, or `N`) at every position (1 to 2015) of the concatenated sequence, based on the corresponding environmental variables.
 
-- **Train/test split** of the dataset for fair model evaluation
-- **Model selection:** Random Forest (RF), Artificial Neural Network (ANN), and Long Short-Term Memory (LSTM)
-- **Hyperparameter tuning** to optimize performance for each algorithm
+### Modeling Workflow
+
+The following steps were **common to all models**:
+
+1. **Load Processed Data**
+   - Used the fully cleaned and encoded dataset from `processed_genomic_dataset.csv`.
+
+2. **Define Features and Targets**
+   - Features (`X`): Environmental variables (average annual temperature and CO₂ emissions).
+   - Targets (`y`): Encoded nucleotide values for positions 1–2015 (columns `p_1` to `p_2015`).
+
+3. **Train-Test Split**
+   - Stratified 70/30 split based on collection year to avoid temporal data leakage and to ensure fair evaluation.
+
+### Model Implementation
+
+All models were benchmarked for the same prediction task. Key details are below:
+
+#### Random Forest (RF)
+
+- **Library:** `sklearn.ensemble.RandomForestClassifier`
+- **Multi-Output Setup:**  
+  Used `sklearn.multioutput.MultiOutputClassifier` to wrap the base Random Forest model, enabling simultaneous prediction of all 2015 nucleotide positions for each sample.
+- **Fitting:**  
+  Model was fit on the training data and used to predict nucleotide classes for all sequence positions in the test set.
+
+#### Artificial Neural Network (ANN)
+
+- **Library:** TensorFlow/Keras
+- **Architecture:**  
+  Multi-layer perceptron with two dense hidden layers with 128 neurons each, ReLU activations, and 30% dropout for regularization.
+- **Output:**  
+  Final layer configured for multi-class, multi-output prediction (2015 softmax units).
+- **Optimization:**  
+  Adam optimizer and sparse categorical cross-entropy loss.
+- **Training:**  
+  Epochs is set to 50 with early stopping to prevent overfitting and mini-batch size of 32 is used to strike a balance.
+
+#### Long Short-Term Memory Network (LSTM)
+
+- **Library:** TensorFlow/Keras
+- **Architecture:**  
+  LSTM layers with 64 memory units to capture potential sequential dependencies within the genomic regions, followed by dense output for multi-class prediction.
+- **Optimization:**  
+  Adam optimizer and sparse categorical cross-entropy loss.
+- **Training:**  
+  Epochs is set to 50 with early stopping to prevent overfitting and mini-batch size of 32 is used to strike a balance.
+
+#### XGBoost
+
+- **Library:** `xgboost.XGBClassifier`
+- **Multi-Output Setup:**  
+  Wrapped with `MultiOutputClassifier` for simultaneous multi-position prediction.
+- **Fitting:**  
+  Model was fit on the training data and used to predict nucleotide classes for all sequence positions in the test set.
+
+#### LightGBM
+
+- **Library:** `lightgbm.LGBMClassifier`
+- **Multi-Output Setup:**  
+  Wrapped with `MultiOutputClassifier` for simultaneous multi-position prediction.
+- **Fitting:**  
+  Model was fit on the training data and used to predict nucleotide classes for all sequence positions in the test set.
+
+> **See individual Jupyter notebooks in the `notebooks/` directory for full implementation details, code, and intermediate outputs.**
 
 ## Evaluation
 
-The evaluation stage will include:
+All models were evaluated using the same metrics to ensure fair comparison and robust performance analysis:
 
-- Calculation of performance metrics such as **accuracy**, **F1-score**, and **ROC-AUC** (where applicable)
-- **Model comparison** through visualizations and summary tables
-- **Error analysis** and interpretation of key results
+1. **Overall Accuracy:**  
+   The proportion of correctly predicted nucleotides across all sequence positions and test samples.
 
-*These steps will be completed and updated as the project progresses.*
+2. **Per-Position Accuracy:**  
+   Accuracy calculated separately for each nucleotide position, highlighting performance consistency (or variation) along the sequence.
+
+3. **Per-Position Classification Report (Macro F1 and Per-Class F1):**  
+   For each position, the classification report summarizes precision, recall, and F1-score for each nucleotide class, with special focus on the macro-average F1 (averaged across all classes).
+
+4. **Per-Position Confusion Matrix:**  
+   Confusion matrices for individual positions provide a detailed view of the distribution of true vs. predicted classes, making it easy to identify systematic errors or class imbalances.
+
+> **Performance comparison with graphs and detailed analysis can be found in the `model_comparison.ipynb` notebook.**
+> **All result tables and summary files are saved in the `results/` directory as CSV and JSON files.**
 
 ## Usage Instructions
 
@@ -200,21 +289,32 @@ To reproduce the results or use the code for further analysis, follow these step
 
 4. **Run the notebooks**
 
-   Open the `notebooks/` folder and run the Jupyter notebooks in the following order:
+   Open the `notebooks/` folder and run the Jupyter notebooks in the following recommended order:
+    
+    1. `download_genbank.ipynb` *(optional: to replicate the raw data download)*
+    2. `extract_regions.ipynb`
+    3. `merge_environment_sequences.ipynb`
+    4. `data_preprocessing.ipynb`
+    5. `data_eda.ipynb`
+    6. `random_forest_model.ipynb`
+    7. `ann_model.ipynb`
+    8. `lstm_model.ipynb`
+    9. `xgboost_model.ipynb`
+    10. `lightgbm_model.ipynb`
+    11. `model_comparison.ipynb`
+    
+5. **Using Pre-trained Models for Prediction**
 
-   - `download_genbank.ipynb` (if you want to replicate raw data download)
-   - `extract_regions.ipynb`
-   - `merge_environment_sequences.ipynb`
-   - `data_preprocessing.ipynb`
-   - `data_eda.ipynb`
-   - Modeling and evaluation notebooks (to be added)
+   - You can directly use any of the trained and saved models in the `models/` directory to make predictions on new genomic or environmental data.
+   - Load the model file (using `joblib`), prepare your feature input in the expected format, and use the `.predict()` method to obtain predictions.
 
-   Notebooks are designed to be run sequentially, but you can jump to any step using pre-processed files provided in `data/`.
+   *Example (Random Forest):*
 
-5. **Model Training and Evaluation**
-
-   - After completing EDA and preprocessing, proceed to model training (notebooks to be added).
-   - Trained models (when available) will be saved in the `models/` folder and can be used as benchmarks or for further analysis.
+    ```python
+    import joblib
+    model = joblib.load('models/rf_multioutput_model.joblib')
+    # X_new: your new feature matrix (environmental variables)
+    y_pred = model.predict(X_new)
   
 ## Conclusion
 
@@ -231,4 +331,3 @@ The project can be expanded by incorporating additional genomic regions, environ
 
 This research project was conducted as part of the bachelor thesis at **IU International University of Applied Sciences, Germany**, under the supervision of **Prof. (Hon.) Dr. rer. pol. Fadi Mohsen**.
 
----
